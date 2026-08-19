@@ -316,7 +316,7 @@ var state = {
   selected: null, gapOnly: false, tab: 'realtx', txComplex: null, txSize: null,
   finder: { min: '', max: '', sizeGroup: 'all', gapOnly: false, submitted: false },
   valuate: { complex: '', size: '', floorTier: 'all', submitted: false },
-  finderInquiry: { open: false, name: '', phone: '', message: '', category: '아파트', dealType: '매매', moveInDate: '', submitting: false, done: false, error: '' },
+  finderInquiry: { open: false, name: '', phone: '', message: '', category: '아파트', dealType: '매매', moveInDate: '', price: '', submitting: false, done: false, error: '' },
   valuateInquiry: { open: false, name: '', phone: '', message: '', category: '아파트', dealType: '매매', targetPrice: '', submitting: false, done: false, error: '' }
 };
 
@@ -351,20 +351,6 @@ function renderFinderTab(regionData, complexNames) {
   var html = '';
   html += '<div class="tool-intro"><p class="tool-intro-title">🔎 매물찾기</p><p class="tool-intro-sub">예산과 평형을 입력하면 조건에 맞는 매물을 찾아드려요. 정확한 층/향/입주조건은 전화 문의 시 안내해드립니다.</p></div>';
 
-  html += '<div class="cta-block"><div class="cta-text">조건 검색 없이 바로 문의하셔도 돼요</div>' +
-    renderInquiryForm('finderInquiry', {
-      toggleLabel: '\ud83d\udce9 매수문의 남기기',
-      toggleSub: '전화 없이 30초, 오늘 안에 연락드려요',
-      formTitle: '매수문의 남기기',
-      messagePlaceholder: '예: 84A 로얄층 급매 나오면 연락주세요',
-      submitLabel: '문의 보내기',
-      doneText: '문의가 접수되었습니다. 빠르게 연락드릴게요!',
-      extraFieldsHtml: '<div class="form-row"><label class="form-label">희망 입주일자 (선택)</label>' +
-        '<input class="form-input" type="date" id="finderInquiryMoveInDate" value="' + esc(state.finderInquiry.moveInDate) + '" /></div>'
-    }) +
-    '<div class="cta-phone-alt">급하신가요? 바로 전화: <a href="tel:010-4897-8240">010-4897-8240</a></div>' +
-  '</div>';
-
   html += '<div class="form-card">' +
     '<div class="form-row"><label class="form-label">희망 예산 (억원)</label>' +
       '<div class="form-range-row">' +
@@ -382,6 +368,22 @@ function renderFinderTab(regionData, complexNames) {
     '</div>' +
     '<div class="form-row form-check-row"><input type="checkbox" id="finderGap" ' + (f.gapOnly ? 'checked' : '') + ' /><label for="finderGap">갭투자 매물만 보기</label></div>' +
     '<button class="form-submit-btn" id="finderSubmitBtn">이 조건으로 매물 찾기</button>' +
+  '</div>';
+
+  html += '<div class="cta-block"><div class="cta-text">조건 검색 없이 바로 문의하셔도 돼요</div>' +
+    renderInquiryForm('finderInquiry', {
+      toggleLabel: '\ud83d\udce9 매수문의 남기기',
+      toggleSub: '전화 없이 30초, 오늘 안에 연락드려요',
+      formTitle: '매수문의 남기기',
+      messagePlaceholder: '예: 84A 로얄층 급매 나오면 연락주세요',
+      submitLabel: '문의 보내기',
+      doneText: '문의가 접수되었습니다. 빠르게 연락드릴게요!',
+      priceFieldHtml: '<div class="form-row"><label class="form-label">희망 매수가 (억원) *</label>' +
+        '<input class="form-input" type="number" step="0.5" id="finderInquiryPrice" value="' + esc(state.finderInquiry.price) + '" placeholder="예: 7.5" /></div>',
+      extraFieldsHtml: '<div class="form-row"><label class="form-label">희망 입주일자 (선택)</label>' +
+        '<input class="form-input" type="date" id="finderInquiryMoveInDate" value="' + esc(state.finderInquiry.moveInDate) + '" /></div>'
+    }) +
+    '<div class="cta-phone-alt">급하신가요? 바로 전화: <a href="tel:010-4897-8240">010-4897-8240</a></div>' +
   '</div>';
 
   if (f.submitted) {
@@ -437,20 +439,6 @@ function renderValuateTab(regionData) {
   var html = '';
   html += '<div class="tool-intro"><p class="tool-intro-title">💰 내집시세예측</p><p class="tool-intro-sub">단지·평형·층을 선택하면 현재 호가와 최근 실거래가를 기준으로 예상 시세를 안내해드려요.</p></div>';
 
-  html += '<div class="cta-block"><div class="cta-text">시세 조회 없이 바로 문의하셔도 돼요</div>' +
-    renderInquiryForm('valuateInquiry', {
-      toggleLabel: '\ud83d\udce9 내집매도 문의하기',
-      toggleSub: '전화 없이 30초, 오늘 안에 연락드려요',
-      formTitle: '내집매도 문의 남기기',
-      messagePlaceholder: '예: 급매로 빠르게 정리하고 싶어요',
-      submitLabel: '문의 보내기',
-      doneText: '문의가 접수되었습니다. 빠르게 연락드릴게요!',
-      extraFieldsHtml: '<div class="form-row"><label class="form-label">희망 매도가 (억원, 선택)</label>' +
-        '<input class="form-input" type="number" step="0.5" id="valuateInquiryTargetPrice" value="' + esc(state.valuateInquiry.targetPrice) + '" placeholder="예: 6.5" /></div>'
-    }) +
-    '<div class="cta-phone-alt">급하신가요? 바로 전화: <a href="tel:010-4897-8240">010-4897-8240</a></div>' +
-  '</div>';
-
   var sizesForComplex = v.complex && regionData[v.complex] ?
     Array.from(new Set(regionData[v.complex].map(function(l) { return l.size; }))).sort(function(a, b) { return a - b; }) : [];
 
@@ -476,6 +464,20 @@ function renderValuateTab(regionData) {
       '</select>' +
     '</div>' +
     '<button class="form-submit-btn" id="valuateSubmitBtn"' + (v.complex && v.size ? '' : ' disabled') + '>내 집 시세 확인하기</button>' +
+  '</div>';
+
+  html += '<div class="cta-block"><div class="cta-text">시세 조회 없이 바로 문의하셔도 돼요</div>' +
+    renderInquiryForm('valuateInquiry', {
+      toggleLabel: '\ud83d\udce9 내집매도 문의하기',
+      toggleSub: '전화 없이 30초, 오늘 안에 연락드려요',
+      formTitle: '내집매도 문의 남기기',
+      messagePlaceholder: '예: 급매로 빠르게 정리하고 싶어요',
+      submitLabel: '문의 보내기',
+      doneText: '문의가 접수되었습니다. 빠르게 연락드릴게요!',
+      priceFieldHtml: '<div class="form-row"><label class="form-label">희망 매도가 (억원) *</label>' +
+        '<input class="form-input" type="number" step="0.5" id="valuateInquiryTargetPrice" value="' + esc(state.valuateInquiry.targetPrice) + '" placeholder="예: 6.5" /></div>'
+    }) +
+    '<div class="cta-phone-alt">급하신가요? 바로 전화: <a href="tel:010-4897-8240">010-4897-8240</a></div>' +
   '</div>';
 
   if (v.submitted && v.complex && v.size) {
@@ -589,10 +591,9 @@ function renderInquiryForm(key, opts) {
   }
   html += '<div class="inquiry-card">' +
     '<div class="inquiry-card-title">' + opts.formTitle + '</div>' +
-    '<div class="form-row"><label class="form-label">성함</label>' +
-      '<input class="form-input" type="text" id="' + key + 'Name" value="' + esc(s.name) + '" placeholder="홍길동" /></div>' +
-    '<div class="form-row"><label class="form-label">연락처</label>' +
+    '<div class="form-row"><label class="form-label">연락처 *</label>' +
       '<input class="form-input" type="tel" id="' + key + 'Phone" value="' + esc(s.phone) + '" placeholder="010-0000-0000" /></div>' +
+    (opts.priceFieldHtml || '') +
     '<div class="form-row"><label class="form-label">관심 부동산 유형</label>' +
       '<select class="form-select" id="' + key + 'Category">' +
         '<option value="아파트"' + (s.category === '아파트' ? ' selected' : '') + '>아파트</option>' +
@@ -605,6 +606,8 @@ function renderInquiryForm(key, opts) {
         '<option value="월세"' + (s.dealType === '월세' ? ' selected' : '') + '>월세</option>' +
       '</select></div>' +
     (opts.extraFieldsHtml || '') +
+    '<div class="form-row"><label class="form-label">성함 (선택)</label>' +
+      '<input class="form-input" type="text" id="' + key + 'Name" value="' + esc(s.name) + '" placeholder="홍길동" /></div>' +
     '<div class="form-row"><label class="form-label">메모 (선택)</label>' +
       '<textarea class="form-input" id="' + key + 'Message" rows="2" placeholder="' + esc(opts.messagePlaceholder) + '">' + esc(s.message) + '</textarea></div>' +
     '<input type="text" id="' + key + 'Website" value="" class="hp-field" tabindex="-1" autocomplete="off" />' +
@@ -1123,6 +1126,9 @@ function render() {
       state.selected = null;
       state.txComplex = null;
       state.txSize = null;
+      // 탭을 옮기면 열려있던 문의 폼은 접어둔다 (다른 탭 갔다와도 계속 펼쳐져 있으면 불편하니까)
+      state.finderInquiry.open = false;
+      state.valuateInquiry.open = false;
       render();
     });
   });
@@ -1215,10 +1221,6 @@ function render() {
   wireInquirySubmit('finderInquiry', 'buy', function() {
     var f = state.finder;
     return '망포지구 매물찾기 · 예산 ' + (f.min || '?') + '~' + (f.max || '?') + '억 · ' + (SIZE_GROUP_LABEL[f.sizeGroup] || '') + (f.gapOnly ? ' · 갭투자 희망' : '');
-  }, function() {
-    var f = state.finder;
-    // 최대예산을 우선 사용하고, 없으면 최소예산을 사용 (CRM 예산 필드는 값 하나만 저장 가능)
-    return f.max || f.min || null;
   });
   wireInquirySubmit('valuateInquiry', 'sell', function() {
     var v = state.valuate;
@@ -1228,7 +1230,7 @@ function render() {
 
 /* 매수문의/매도문의 폼 제출 버튼에 공통으로 연결하는 핸들러.
    유효성 검사 -> CRM(/api/leads)로 전송 -> 성공 시 완료 화면, 실패 시 에러 문구를 그 자리에 보여준다. */
-function wireInquirySubmit(key, leadType, propertyRefFn, budgetEokFn) {
+function wireInquirySubmit(key, leadType, propertyRefFn) {
   var btn = document.getElementById(key + 'SubmitBtn');
   if (!btn) return;
   btn.addEventListener('click', function() {
@@ -1238,7 +1240,7 @@ function wireInquirySubmit(key, leadType, propertyRefFn, budgetEokFn) {
     var categoryEl = document.getElementById(key + 'Category');
     var dealTypeEl = document.getElementById(key + 'DealType');
     var moveInDateEl = document.getElementById(key + 'MoveInDate');
-    var targetPriceEl = document.getElementById(key + 'TargetPrice');
+    var priceEl = document.getElementById(key + 'Price') || document.getElementById(key + 'TargetPrice');
     var messageEl = document.getElementById(key + 'Message');
     var websiteEl = document.getElementById(key + 'Website');
     s.name = nameEl ? nameEl.value : '';
@@ -1246,11 +1248,11 @@ function wireInquirySubmit(key, leadType, propertyRefFn, budgetEokFn) {
     s.category = categoryEl ? categoryEl.value : s.category;
     s.dealType = dealTypeEl ? dealTypeEl.value : s.dealType;
     if (moveInDateEl) s.moveInDate = moveInDateEl.value;
-    if (targetPriceEl) s.targetPrice = targetPriceEl.value;
+    var priceValue = priceEl ? priceEl.value : '';
     s.message = messageEl ? messageEl.value : '';
 
-    if (!s.name.trim()) { s.error = '성함을 입력해주세요.'; render(); return; }
     if (!/^[0-9\-+ ]{9,20}$/.test(s.phone.trim())) { s.error = '연락처를 정확히 입력해주세요 (예: 010-1234-5678).'; render(); return; }
+    if (!priceValue || isNaN(parseFloat(priceValue)) || parseFloat(priceValue) <= 0) { s.error = '희망 가격을 입력해주세요.'; render(); return; }
 
     s.error = '';
     s.submitting = true;
@@ -1268,7 +1270,7 @@ function wireInquirySubmit(key, leadType, propertyRefFn, budgetEokFn) {
         desiredMoveInDate: s.moveInDate || null,
         message: s.message.trim(),
         propertyRef: propertyRefFn(),
-        budgetEok: budgetEokFn ? budgetEokFn() : (s.targetPrice || null),
+        budgetEok: priceValue,
         source: '망포지구 대시보드',
         website: websiteEl ? websiteEl.value : ''
       })
