@@ -896,7 +896,7 @@ function renderTxComplexCard(name, txList, color) {
   var sizes = n > 0 ? Array.from(new Set(txList.map(function(t){ return t.size; }))).sort(function(a,b){ return b-a; }) : [];
   var newTxs = n > 0 ? txList.filter(function(t){ return t.isNew; }).sort(function(a,b){ return a.date > b.date ? -1 : 1; }) : [];
   var newCount = newTxs.length;
-  var recordHighCount = n > 0 ? txList.filter(function(t){ return t.isRecordHigh; }).length : 0;
+  var recordHighCount = n > 0 ? txList.filter(function(t){ return t.isRecordHigh && t.isNew; }).length : 0;
   var newBadge = newCount > 0
     ? '<div class="tx-new-badge">🆕 신규 ' + newCount + '건</div>'
     : '';
